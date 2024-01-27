@@ -1,0 +1,36 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from imblearn.over_sampling import RandomOverSampler
+from imblearn.under_sampling import RandomUnderSampler
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix
+
+data = pd.read_csv(r"creditcard.csv")
+data.head()
+
+print(data.isnull().sum())
+
+scaler = StandardScaler()
+data['Amount'] = scaler.fit_transform(data['Amount'].values.reshape(-1, 1))
+data['Time'] = scaler.fit_transform(data['Time'].values.reshape(-1, 1))
+
+oversampler = RandomOverSampler(sampling_strategy=0.5)
+X_over, y_over = oversampler.fit_resample(data.drop('Class', axis=1), data['Class'])
+
+undersampler = RandomUnderSampler(sampling_strategy=0.5)
+X_under, y_under = undersampler.fit_resample(data.drop('Class', axis=1), data['Class'])
+X_train, X_test, y_train, y_test = train_test_split(X_over, y_over, test_size=0.2, random_state=42)
+
+design = LogisticRegression()
+design.fit(X_train, y_train)
+y_pred = design.predict(X_test)
+print("Classification Report:\n", classification_report(y_test, y_pred))
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+
+design.fit(X_under, y_under)
+y_pred_under = design.predict(X_test)
+
+print("Undersampled Model Classification Report:\n", classification_report(y_test, y_pred_under))
+print("Undersampled Model Confusion Matrix:\n", confusion_matrix(y_test, y_pred_under))
