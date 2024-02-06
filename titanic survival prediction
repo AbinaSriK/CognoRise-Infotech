@@ -1,0 +1,56 @@
+import numpy as np 
+import pandas as pd 
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import accuracy_score
+
+df = pd.read_csv('tested.csv')
+df.head()
+df.info()
+df.describe()
+
+numeric_df = df.select_dtypes(include=['float64', 'int64'])
+sns.heatmap(numeric_df.corr(), cmap='YlGnBu', annot=True)
+plt.show()
+
+df.drop(columns=['PassengerId', 'Name', 'Ticket', 'Cabin'], inplace=True)
+df.head()
+
+df.isnull().sum()
+
+colors = ['blue', 'pink'] 
+ax = df['Sex'].value_counts().plot(kind='bar', color=colors)
+
+
+for p in ax.patches:
+    ax.annotate(str(p.get_height()), (p.get_x() + p.get_width() / 2., p.get_height()),
+                ha='center', va='center', xytext=(0, 10), textcoords='offset points')
+
+plt.xlabel('Sex')
+plt.ylabel('Count')
+plt.title('Distribution of Gender in the Dataset')
+plt.show()
+
+colors = ['red', 'green'] 
+ax = df['Survived'].value_counts().plot(kind='bar', color=colors)
+
+for p in ax.patches:
+    ax.annotate(str(p.get_height()), (p.get_x() + p.get_width() / 2., p.get_height()),
+                ha='center', va='center', xytext=(0, 10), textcoords='offset points')
+plt.xlabel('Survived')
+plt.ylabel('Count')
+plt.title('Distribution of Survived in the Dataset')
+
+plt.show()
+
+colors = ['red', 'green']
+ax = df_train['Survived'].value_counts().plot.pie(autopct='%1.1f%%', colors=colors)
+
+
+plt.axis('equal')  
+plt.title('Distribution of Survived in the Dataset')
+
+plt.show()
